@@ -26,13 +26,15 @@ app.get("/get-cats", (req: Request, res: Response) => {
 app.post("/post-animal", (req: Request, res: Response) => {
   const { name, type } = req.body;
 
-  const animalObject = new Animal({
-    name,
-    type,
-  });
+  if (name && type) {
+    const animalObject = new Animal({
+      name,
+      type,
+    });
 
-  animalObject.save();
-  res.status(200).json("Animal added");
+    animalObject.save();
+    res.status(200).json("Animal added");
+  }
 });
 
 // Delete animal
