@@ -32,8 +32,7 @@ app.post("/post-animal", (req: Request, res: Response) => {
       type,
     });
 
-    animalObject.save();
-    res.status(200).json("Animal added");
+    animalObject.save().then((data) => res.status(200).json(data));
   }
 });
 
