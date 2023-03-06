@@ -48,16 +48,17 @@ app.delete("/delete-todo/:id", (req, res) => {
 app.put("/is-done-todo/:id", (req, res) => {
   const id = req.params.id;
 
-  Todo.findById(id).then(({ done }) => {
-    Todo.findByIdAndUpdate(id, { done: !done })
-      .then((data) => {
-        console.log(data);
-        res.status(200).json(data);
-      })
-      .catch((error) => {
-        console.log(error);
-        return res.status(500).json("Internal Server Error");
-      });
+  Todo.findById(id).then((data) => {
+    if (data) {
+      Todo.findByIdAndUpdate(id, { done: !data.done })
+        .then((data) => {
+          res.status(200).json(data);
+        })
+        .catch((error) => {
+          console.log(error);
+          return res.status(500).json("Internal Server Error");
+        });
+    }
   });
 });
 
