@@ -5,6 +5,8 @@ import cors from "cors";
 import mongoConnect from "./connect";
 import { Animal } from "./animalSchema";
 import { Todo } from "./todoSchema";
+import { truncate } from "fs/promises";
+import { domainToASCII } from "url";
 
 const app = express();
 
@@ -40,6 +42,23 @@ app.delete("/delete-todo/:id", (req, res) => {
       console.log(error);
       return res.status(500).json("Error deleting task!");
     });
+});
+
+// Mark todo as done/undone
+app.put("/is-done-todo/:id", (req, res) => {
+  const id = req.params.id;
+
+  Todo.findById(id).then(({ done }) => {
+    Todo.findByIdAndUpdate(id, { done: !done })
+      .then((data) => {
+        console.log(data);
+        res.status(200).json(data);
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(500).json("Internal Server Error");
+      });
+  });
 });
 
 // Get all animals
