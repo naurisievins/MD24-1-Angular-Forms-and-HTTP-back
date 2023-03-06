@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 import bodyparser from "body-parser";
 import cors from "cors";
 import mongoConnect from "./connect";
-import { Animal } from "./schema";
+import { Animal } from "./animalSchema";
+import { Todo } from "./todoSchema";
 
 const app = express();
 
@@ -11,6 +12,35 @@ app.use(bodyparser.json());
 app.use(cors({ origin: "*" }));
 
 mongoConnect();
+
+// Get all todos
+app.get("/get-todos", (req: Request, res: Response) => {
+  Todo.find().then((data) => res.status(200).json(data));
+});
+
+// Add Todo
+app.post("/post-todo", (req: Request, res: Response) => {
+  const { title, content } = req.body;
+
+  if (title && content) {
+    const todoItem = new Todo({ title, content });
+    todoItem.save().then((data) => res.status(200).json(data));
+  }
+});
+
+// Delete todo
+app.delete("/delete-todo/:id", (req, res) => {
+  const id = req.params.id;
+
+  Todo.findByIdAndDelete(id)
+    .then(() => {
+      res.status(200).json(`Task with ID ${id} deleted successfully`);
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).json("Error deleting task!");
+    });
+});
 
 // Get all animals
 app.get("/get-animals", (req: Request, res: Response) => {
